@@ -1,0 +1,230 @@
+<html>
+    <head>
+        <title>DC Example</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/dashboard.css" />
+    </head>
+    <body>
+    <center><h3> DC JS - Crossfilter</h3></center>
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="span4">
+                <div id="pie-chart" class="chart-box">
+                    <strong>Ventas de productos</strong>
+                    <input type="image" class="reset btn btn-mini" src="img/trash.png" title="Limpiar filtro" onclick="chart1.filterAll();
+                            dc.redrawAll();" style="display:none;" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="span4">
+                <div id="bar-chart" class="chart-box">
+                    <strong>Ventas de productos</strong>
+                    <input type="image" class="reset btn btn-mini" src="img/trash.png" title="Limpiar filtro" onclick="bart1.filterAll();
+                            dc.redrawAll();" style="display:none;" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="span4">
+                <div id="year-chart" class="chart-box">
+                    <strong>Ventas de productos</strong>
+                    <input type="image" class="reset btn btn-mini" src="img/trash.png" title="Limpiar filtro" onclick="bartYear.filterAll();
+                            dc.redrawAll();" style="display:none;" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="span4">
+                <div id="bur-chart" class="chart-box">
+                    <strong>Ventas de productos</strong>
+                    <input type="image" class="reset btn btn-mini" src="img/trash.png" title="Limpiar filtro" onclick="burYear.filterAll();
+                            dc.redrawAll();" style="display:none;" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/d3.js"></script>
+    <script type="text/javascript" src="js/crossfilter.js"></script>
+    <script type="text/javascript" src="js/dc.js"></script>
+    <script type="text/javascript" src="js/colorbrewer.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+
+    <script type="text/javascript">
+                        var gradientColors12 = ["#3AB038", "#4BB038", "#5CB039", "#6DB039", "#7FB03A", "#96B540", "#ADBB47", "#C4C14E", "#DBC755", "#DECD6C", "#E2D484", "#E6DB9C"];
+
+                        var chart1 = dc.pieChart("#pie-chart");
+                        var bart1 = dc.rowChart("#bar-chart");
+                        var bartYear = dc.barChart("#year-chart");
+                        var burYear = dc.bubbleChart("#bur-chart");
+                        var data = [
+                            {name: 'Azucar', precio: 12.5, unidad: 2, year: 2004},
+                            {name: 'Arroz', precio: 12.5, unidad: 1, year: 2002},
+                            {name: 'Yuca', precio: 12.5, unidad: 2, year: 2002},
+                            {name: 'Arroz', precio: 1.54, unidad: 5, year: 2007},
+                            {name: 'Arroz', precio: 0.34, unidad: 20, year: 2006},
+                            {name: 'Azucar', precio: 12.5, unidad: 8, year: 2004},
+                            {name: 'Azucar', precio: 12.5, unidad: 2, year: 2007},
+                            {name: 'Arroz', precio: 3.5, unidad: 4, year: 2007}
+                        ];
+                        data.forEach(function (d) {
+                            d.total = d.precio * d.unidad;
+                        });
+
+                        var ndx = crossfilter(data);
+                        var productDim = ndx.dimension(function (d) {
+                            return d.name;
+                        });
+                        var sumProduct = productDim.group().reduceSum(function (d) {
+                            return d.total;
+                        });
+
+                        var productBarDim = ndx.dimension(function (d) {
+                            return d.name;
+                        });
+                        var sumBarProduct = productBarDim.group().reduceSum(function (d) {
+                            return d.total;
+                        });
+
+                        var yearDim = ndx.dimension(function (d) {
+                            return d.year;
+                        });
+                        var ventasYear = yearDim.group().reduceSum(function (d) {
+                            return d.total;
+                        });
+
+                        var yearDim = ndx.dimension(function (d) {
+                            return d.year;
+                        });
+                        var ventasYear = yearDim.group().reduceSum(function (d) {
+                            return d.total;
+                        });
+
+                        var fnReduce = {
+                            // callback for when data is add from the current filter results
+                            add: function (p, v) {
+                                ++p.count;
+                                p.importeTotal += v.total;
+                                console.log(p);
+                                return p;
+                            },
+                            // callback for when data is removed from the current filter results
+                            remove: function (p, v) {
+                                --p.count;
+                                p.importeTotal -= v.total;
+                                return p;
+                            },
+                            // initialize p
+                            init: function () {
+                                return {count: 0, importeTotal: 0};
+                            },
+                            sum: function (d) {
+                                return d.total;
+                            }
+                        };
+
+                        var yearBurDim = ndx.dimension(function (d) {
+                            return d.name;
+                        });
+                        var ventasBurYear = yearBurDim.group().reduceSum(function (d) {
+                            return d.total;
+                        });
+
+                        var ventasBurYearTest = yearBurDim.group().reduce(fnReduce.add, fnReduce.remove, fnReduce.init);
+
+                        var colorScale = {"Azucar": "green", "Yuca": "red", "Arroz": "blue"};
+                        chart1.width(260)
+                                .height(150)
+                                .dimension(productDim)
+                                .group(sumProduct)
+                                .renderLabel(true)
+                                .transitionDuration(500)
+                                .title(function (p) {
+                                    return "Producto :" + p.key + "\nTotal : S/. " + p.value;
+                                })
+                                .renderTitle(true)
+                                .legend(dc.legend())
+                                .colors(function (d) {
+                                    return colorScale[d];
+                                })
+                                .innerRadius(10);
+
+                        chart1.render();
+
+                        bart1.width(260).height(150)
+                                .dimension(productBarDim)
+                                .group(sumBarProduct)
+                                .elasticX(true)
+                                .gap(2);
+                        bart1.render();
+
+                        bartYear
+                                .width(260)
+                                .height(150)
+                                .x(d3.scale.linear().domain([2000, 2010]))
+                                .brushOn(true)
+                                .yAxisLabel("This is the Y Axis!")
+                                .dimension(yearDim)
+                                .group(ventasYear)
+                                .renderlet(function (chart) {
+                                    chart.selectAll('rect').on("click", function (d) {
+                                        console.log("click!", d);
+                                    });
+                                });
+                        bartYear.render();
+
+                        burYear.width(260)
+                                .height(150)
+                                .dimension(yearBurDim)
+                                .group(ventasBurYearTest)
+                                .maxBubbleRelativeSize(0.2)
+                                .x(d3.scale.linear().domain([0, 1]))
+                                .y(d3.scale.linear().domain([0, 1]))
+                                .r(d3.scale.linear().domain([0, 300]))
+                                .colors(gradientColors12)
+                                .colorAccessor(function (d) {
+
+                                    return d.value.importeTotal / 100;
+                                })
+                                .keyAccessor(function (p) {
+                                    return p.value.importeTotal;
+                                })
+                                .valueAccessor(function (p) {
+                                    return p.value.importeTotal;
+                                })
+                                .radiusValueAccessor(function (p) {
+                                    return p.value.importeTotal;
+                                })
+                                .elasticY(true)
+                                .elasticX(true)
+                                .yAxisPadding(500)
+                                .xAxisPadding(10)
+                                .renderHorizontalGridLines(true)
+                                .renderVerticalGridLines(true)
+                                .xAxisLabel('soles/apunte')
+                                .yAxisLabel('soles')
+                                .renderLabel(true)
+                                .label(function (p) {
+                                    return p.key;
+                                })
+                                .title(function (p) {
+                                    return [p.key,
+                                        "Importe Total: " + p.value.importeTotal + " x (" + p.value.importeTotal + " t)",
+                                        "Importe Medio: " + p.value.importeTotal + " x/apunte"]
+                                            .join("\n");
+                                })
+                                .renderTitle(true);
+                        burYear.render();
+
+    </script>
+</body>
+</html>

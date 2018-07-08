@@ -1,0 +1,75 @@
+#monthly-volume-chart g.y { display: none; }
+body {
+    font-family: Calibri, "MS Trebuchet", Verdana;
+    background: #dddddd;
+    /* padding-top: 80px; */
+}
+
+div.chart-box {
+    /* border-radius: 8px; */
+    -moz-border-radius: 8px;
+    /* -webkit-border-radius: 8px; */
+    background: #fafafa;
+    padding: 10px;
+    margin: 10px;
+    /* box-shadow: 5px 5px 5px 5px rgba(168, 168, 168, 0.6); */
+    overflow: hidden;
+}
+
+a, a:visited { text-decoration: none; color: darkgreen; }
+
+h1, h2, strong { color: darkgreen }
+
+.dc-data-table { font-size: 12px }
+.dc-table-column { text-align: center; }
+.dc-table-column._2,
+.dc-table-column._3 { text-align: right; }
+.dc-data-table td {
+    border-bottom: 1px solid #DDDDDD;
+    line-height: 15px;
+    padding: 4px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+img.icon {
+    background: #DFF2BF;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 4px;
+}
+
+input.button {
+    background: #fafafa;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 4px;
+    border: 1px solid #DFF2BF;
+}
+
+input.button:hover {
+    background: #DFF2BF;
+}
+
+input.cubo {
+    float: right;
+    width: 12px;
+}
+
+.topbar {
+    background: #fafafa;
+    border-bottom: 3px solid darkgreen;
+}
+
+.topbar h2 {
+    margin: 0px;
+    font-style: italic;
+    font-weight: normal;
+}
+
+input.reset {
+    width: 16px;
+    height:12px;
+}
